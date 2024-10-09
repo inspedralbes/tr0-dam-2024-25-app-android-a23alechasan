@@ -53,11 +53,7 @@ public fun getPreguntes(){
     preguntes.add(pregunta2)
     preguntes.add(pregunta3)
 
-    pregunta = preguntes[IndexpreguntaActual].pregunta
-    resposta1 = preguntes[IndexpreguntaActual].respostes[0].etiqueta
-    resposta2 = preguntes[IndexpreguntaActual].respostes[1].etiqueta
-    resposta3 = preguntes[IndexpreguntaActual].respostes[2].etiqueta
-    resposta4 = preguntes[IndexpreguntaActual].respostes[3].etiqueta
+    actualitzarPreguntes()
 }
 
 fun contestarPreguntes(numeroResposta: Int){
@@ -68,8 +64,16 @@ fun contestarPreguntes(numeroResposta: Int){
         comprovarPreguntes(respostesUsuari)
         pantallaResultats(activityJoc)
     } else {
-        updatePreguntes()
+        actualitzarPreguntes()
     }
+}
+
+fun actualitzarPreguntes(){
+    pregunta.value = preguntes[IndexpreguntaActual].pregunta
+    resposta1.value = preguntes[IndexpreguntaActual].respostes[0].etiqueta
+    resposta2.value = preguntes[IndexpreguntaActual].respostes[1].etiqueta
+    resposta3.value = preguntes[IndexpreguntaActual].respostes[2].etiqueta
+    resposta4.value = preguntes[IndexpreguntaActual].respostes[3].etiqueta
 }
 
 fun comprovarPreguntes(respostes: MutableList<Int>){
@@ -77,14 +81,6 @@ fun comprovarPreguntes(respostes: MutableList<Int>){
 
     // encertades = ??
     // fallades = ??
-}
-
-fun updatePreguntes() {
-    pregunta = preguntes[IndexpreguntaActual].pregunta
-    resposta1 = preguntes[IndexpreguntaActual].respostes[0].etiqueta
-    resposta2 = preguntes[IndexpreguntaActual].respostes[1].etiqueta
-    resposta3 = preguntes[IndexpreguntaActual].respostes[2].etiqueta
-    resposta4 = preguntes[IndexpreguntaActual].respostes[3].etiqueta
 }
 
 data class Resposta(
@@ -104,6 +100,5 @@ class Pregunta {
         this.respostes = respostes
         this.numeroImatge = numeroImatge
     }
-    constructor() {
-    }
+    constructor()
 }

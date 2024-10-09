@@ -47,11 +47,11 @@ import com.example.projecte0alexcharles.data.preguntes
 import com.example.projecte0alexcharles.ui.theme.Projecte0AlexCharlesTheme
 
 
-var pregunta = ""
-var resposta1 = ""
-var resposta2 = ""
-var resposta3 = ""
-var resposta4 = ""
+var pregunta = mutableStateOf("")
+var resposta1 = mutableStateOf("")
+var resposta2 = mutableStateOf("")
+var resposta3 = mutableStateOf("")
+var resposta4 = mutableStateOf("")
 
 var activityJoc = ComponentActivity()
 
@@ -97,75 +97,102 @@ fun pantallaCronometre(activity: ComponentActivity) {
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = pregunta,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = BlauText,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    textAlign = TextAlign.Center
-                )
+                    Text(
+                        text = pregunta.value,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = BlauText,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .height(100.dp),
+                        textAlign = TextAlign.Center
+                    )
 
-                val imatge = painterResource(R.drawable.novoylogo)
-                Image(
-                    painter = imatge,
-                    contentDescription = "novoylogo",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
+                    val imatge = painterResource(R.drawable.novoylogo)
+                    Image(
+                        painter = imatge,
+                        contentDescription = "novoylogo",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    )
 
-                Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
 
-                Button(onClick = { contestarPreguntes(1) },
-                    colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
-                ) {
-                    Text(text = resposta1, fontSize = 15.sp, color = Negre, textAlign = TextAlign.Left)
+                    Button(onClick = { contestarPreguntes(1) },
+                        colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
+                    ) {
+                        Text(text = resposta1.value,
+                            fontSize = 15.sp,
+                            color = Negre,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(onClick = { contestarPreguntes(2) },
+                        colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
+                    ) {
+                        Text(text = resposta2.value,
+                            fontSize = 15.sp,
+                            color = Negre,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(onClick = { contestarPreguntes(3) },
+                        colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
+                    ) {
+                        Text(text = resposta3.value,
+                            fontSize = 15.sp,
+                            color = Negre,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(onClick = { contestarPreguntes(4) },
+                        colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
+                    ) {
+                        Text(text = resposta4.value,
+                            fontSize = 15.sp,
+                            color = Negre,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp))
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Text(text = "${tempsRestant}s",
+                    fontSize = 40.sp,
+                    color = Negre,
+                    modifier = Modifier.padding(top = 16.dp))
 
-                Button(onClick = { contestarPreguntes(2) },
-                    colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
-                ) {
-                    Text(text = resposta2, fontSize = 15.sp, color = Negre, textAlign = TextAlign.Left)
-                }
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Button(onClick = { contestarPreguntes(3) },
-                    colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
-                ) {
-                    Text(text = resposta3, fontSize = 15.sp, color = Negre, textAlign = TextAlign.Left)
-                }
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Button(onClick = { contestarPreguntes(4) },
-                    colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(BorderStroke(1.dp, BlauText), RoundedCornerShape(50.dp))
-                ) {
-                    Text(text = resposta4, fontSize = 15.sp, color = Negre, textAlign = TextAlign.Left)
-                }
-            }
-
-            Text(text = "${tempsRestant}s",
-                fontSize = 40.sp,
-                color = Negre,
-                modifier = Modifier.padding(top = 16.dp))
         }
     }
 }
