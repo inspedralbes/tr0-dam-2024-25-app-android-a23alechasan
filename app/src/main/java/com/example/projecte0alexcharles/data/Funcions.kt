@@ -1,5 +1,6 @@
 package com.example.projecte0alexcharles.data
 
+import android.util.Log
 import com.example.projecte0alexcharles.JocActivity
 import com.example.projecte0alexcharles.activityJoc
 import com.example.projecte0alexcharles.encertades
@@ -9,79 +10,87 @@ import com.example.projecte0alexcharles.resposta1
 import com.example.projecte0alexcharles.resposta2
 import com.example.projecte0alexcharles.resposta3
 import com.example.projecte0alexcharles.resposta4
+import com.example.projecte0alexcharles.network.*
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-val respostesUsuari: MutableList<Int> = mutableListOf()
-val preguntes = MutableList(0) {Pregunta()}
-var IndexpreguntaActual = 0
+class PreguntesViewModel : ViewModel() {
+    val respostesUsuari: MutableList<Int> = mutableListOf()
+    val preguntes = MutableList(0) { Pregunta() }
+    var IndexpreguntaActual = 0
+    var uuid = ""
 
-public fun getPreguntes(){
-    val pregunta1 = Pregunta(
-        index = 1,
-        pregunta = "¿Está permitido entablar competiciones de velocidad en las autopistas?",
-        respostes = listOf(
-            Resposta(1, "A) No, está totalmente prohibido."),
-            Resposta(2, "B) No se podrá realizar en autopistas, pero sí en vías secundarias."),
-            Resposta(3, "C) Sí, pero siempre y cuando se haga por conductores experimentados."),
-            Resposta(4, "D) Sí, pero solo si son coches con licencia para ello.")
-        ),
-        numeroImatge = 1
-    )
-    val pregunta2 = Pregunta(
-        index = 1,
-        pregunta = "¿Quant és 2 + 2?",
-        respostes = listOf(
-            Resposta(1, "A) 1"),
-            Resposta(2, "B) 2"),
-            Resposta(3, "C) 3"),
-            Resposta(4, "D) 4")
-        ),
-        numeroImatge = 1
-    )
-    val pregunta3 = Pregunta(
-        index = 1,
-        pregunta = "¿El pepe?",
-        respostes = listOf(
-            Resposta(1, "A) Si"),
-            Resposta(2, "B) No"),
-            Resposta(3, "C) Puede"),
-            Resposta(4, "D) Ns/Nc")
-        ),
-        numeroImatge = 1
-    )
+    fun getPreguntes() {
+        viewModelScope.launch {
+            try {
+                val listResult = PreguntesAPI.PreguntesAPi.retrofitService.getPreguntesJSON(20)
+                val preguntesProvisional = parsePreguntes(listResult)
 
-    preguntes.add(pregunta1)
-    preguntes.add(pregunta2)
-    preguntes.add(pregunta3)
+                for (pregunta in preguntesProvisional){
+                    preguntes.add(pregunta)
+                }
 
-    actualitzarPreguntes()
-}
-
-fun contestarPreguntes(numeroResposta: Int){
-    respostesUsuari.add(numeroResposta)
-    IndexpreguntaActual += 1
-
-    if (IndexpreguntaActual >= preguntes.size){
-        comprovarPreguntes(respostesUsuari)
-        pantallaResultats(activityJoc)
-    } else {
-        actualitzarPreguntes()
+            } catch (e: Exception) {
+                Log.e("PreguntesViewModel", "Error al carregar les preguntes: ${e.message}")
+            }
+        }
     }
-}
 
-fun actualitzarPreguntes(){
-    pregunta.value = preguntes[IndexpreguntaActual].pregunta
-    resposta1.value = preguntes[IndexpreguntaActual].respostes[0].etiqueta
-    resposta2.value = preguntes[IndexpreguntaActual].respostes[1].etiqueta
-    resposta3.value = preguntes[IndexpreguntaActual].respostes[2].etiqueta
-    resposta4.value = preguntes[IndexpreguntaActual].respostes[3].etiqueta
-}
+    fun contestarPreguntes(numeroResposta: Int) {
+        respostesUsuari.add(numeroResposta)
+        IndexpreguntaActual += 1
 
-fun comprovarPreguntes(respostes: MutableList<Int>){
-    //comprovar al servidor
+        if (IndexpreguntaActual >= preguntes.size) {
+            comprovarPreguntes(respostesUsuari)
+            pantallaResultats(activityJoc)
+        } else {
+            actualitzarPreguntes()
+        }
+    }
 
-    // encertades = ??
-    // fallades = ??
-}
+    fun actualitzarPreguntes() {
+        pregunta.value = preguntes[IndexpreguntaActual].pregunta
+        resposta1.value = preguntes[IndexpreguntaActual].respostes[0].etiqueta
+        resposta2.value = preguntes[IndexpreguntaActual].respostes[1].etiqueta
+        resposta3.value = preguntes[IndexpreguntaActual].respostes[2].etiqueta
+        resposta4.value = preguntes[IndexpreguntaActual].respostes[3].etiqueta
+    }
+
+    fun comprovarPreguntes(respostes: MutableList<Int>) {
+        // comprovar al servidor
+        // encertades = ??
+        // fallades = ??
+    }
+
+    fun parsePreguntes(json: String): List<Pregunta> {
+        val gson = Gson()
+        val responseMap = gson.fromJson(json, Map::class.java)
+        uuid = responseMap["sessionId"] as String
+        val quizs = responseMap["quizs"] as List<Map<String, Any>>
+        val preguntesProvisional = mutableListOf<Pregunta>()
+        for ((index, quiz) in quizs.withIndex()) {
+            val respostesJson = quiz["respostes"] as List<Map<String, Any>>
+            val respostes = respostesJson.map { resposta ->
+                Resposta(
+                    id = resposta["id"] as Int,
+                    etiqueta = resposta["etiqueta"] as String
+                )
+            }
+            val novaPregunta = Pregunta(
+                index = index,
+                pregunta = quiz["pregunta"] as String,
+                respostes = respostes,
+                numeroImatge = quiz["id"] as Int
+            )
+            preguntesProvisional.add(novaPregunta)
+        }
+        return preguntesProvisional
+    }
 
 data class Resposta(
     val id: Int,
@@ -101,4 +110,5 @@ class Pregunta {
         this.numeroImatge = numeroImatge
     }
     constructor()
+}
 }

@@ -39,7 +39,6 @@ import com.example.projecte0alexcharles.ui.theme.BlauText
 import com.example.projecte0alexcharles.ui.theme.ContornBotoGroc
 import com.example.projecte0alexcharles.ui.theme.GrocBoto
 import com.example.projecte0alexcharles.ui.theme.Negre
-import com.example.projecte0alexcharles.data.Pregunta
 import com.example.projecte0alexcharles.ui.theme.Projecte0AlexCharlesTheme
 import com.example.projecte0alexcharles.ui.theme.VerdEncertades
 import com.example.projecte0alexcharles.ui.theme.VermellFallades

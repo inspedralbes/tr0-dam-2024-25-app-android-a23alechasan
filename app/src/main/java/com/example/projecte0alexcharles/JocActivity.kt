@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,13 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projecte0alexcharles.ui.theme.BlancBoto
 import com.example.projecte0alexcharles.ui.theme.BlauText
-import com.example.projecte0alexcharles.ui.theme.ContornBotoGroc
-import com.example.projecte0alexcharles.ui.theme.GrocBoto
 import com.example.projecte0alexcharles.ui.theme.Negre
-import com.example.projecte0alexcharles.data.Pregunta
-import com.example.projecte0alexcharles.data.contestarPreguntes
-import com.example.projecte0alexcharles.data.getPreguntes
-import com.example.projecte0alexcharles.data.preguntes
+import com.example.projecte0alexcharles.data.PreguntesViewModel
 import com.example.projecte0alexcharles.ui.theme.Projecte0AlexCharlesTheme
 
 
@@ -56,12 +51,13 @@ var resposta4 = mutableStateOf("")
 var activityJoc = ComponentActivity()
 
 class JocActivity : ComponentActivity() {
+    private val viewModel: PreguntesViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
-        getPreguntes()
+        viewModel.getPreguntes()
         super.onCreate(savedInstanceState)
         setContent {
             Projecte0AlexCharlesTheme {
-                pantallaCronometre(activity = this)
+                pantallaCronometre(activity = this, viewModel = viewModel)
                 activityJoc = this
             }
         }
@@ -69,7 +65,7 @@ class JocActivity : ComponentActivity() {
 }
 
 @Composable
-fun pantallaCronometre(activity: ComponentActivity) {
+fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewModel) {
 
     var tempsRestant by remember { mutableStateOf(30) }
 
@@ -121,7 +117,7 @@ fun pantallaCronometre(activity: ComponentActivity) {
 
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    Button(onClick = { contestarPreguntes(1) },
+                    Button(onClick = { viewModel.contestarPreguntes(1) },
                         colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -138,7 +134,7 @@ fun pantallaCronometre(activity: ComponentActivity) {
 
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    Button(onClick = { contestarPreguntes(2) },
+                    Button(onClick = { viewModel.contestarPreguntes(2) },
                         colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -155,7 +151,7 @@ fun pantallaCronometre(activity: ComponentActivity) {
 
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    Button(onClick = { contestarPreguntes(3) },
+                    Button(onClick = { viewModel.contestarPreguntes(3) },
                         colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -172,7 +168,7 @@ fun pantallaCronometre(activity: ComponentActivity) {
 
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    Button(onClick = { contestarPreguntes(4) },
+                    Button(onClick = { viewModel.contestarPreguntes(4) },
                         colors = ButtonDefaults.buttonColors(containerColor = BlancBoto),
                         modifier = Modifier
                             .fillMaxWidth()
