@@ -48,12 +48,13 @@ var resposta2 = mutableStateOf("")
 var resposta3 = mutableStateOf("")
 var resposta4 = mutableStateOf("")
 
+private var countDownTimer: CountDownTimer? = null
+
 var activityJoc = ComponentActivity()
 
 class JocActivity : ComponentActivity() {
     private val viewModel: PreguntesViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewModel.getPreguntes()
         super.onCreate(savedInstanceState)
         setContent {
             Projecte0AlexCharlesTheme {
@@ -61,6 +62,7 @@ class JocActivity : ComponentActivity() {
                 activityJoc = this
             }
         }
+        viewModel.getPreguntes()
     }
 }
 
@@ -70,13 +72,16 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
     var tempsRestant by remember { mutableStateOf(30) }
 
     LaunchedEffect(Unit) {
-        object : CountDownTimer(31000, 1000) {
+        countDownTimer = object : CountDownTimer(31000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 tempsRestant = (millisUntilFinished / 1000).toInt()
             }
 
             override fun onFinish() {
+                viewModel.contestarPreguntes(1)
+                viewModel.comprovarPreguntes()
                 pantallaResultats(activity)
+                countDownTimer?.cancel()
             }
         }.start()
     }
@@ -192,6 +197,10 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
         }
     }
 }
+fun JocActivity.pararTemporitzador() {
+    countDownTimer?.cancel()
+}
+
 
 fun pantallaResultats(activity: ComponentActivity) {
     val intent = Intent(activity, FinalActivity::class.java)

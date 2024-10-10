@@ -44,8 +44,8 @@ import com.example.projecte0alexcharles.ui.theme.VerdEncertades
 import com.example.projecte0alexcharles.ui.theme.VermellFallades
 
 
-var encertades = "0"
-var fallades = "0"
+var encertades = Int ?: 0
+var fallades = Int ?: 0
 class FinalActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

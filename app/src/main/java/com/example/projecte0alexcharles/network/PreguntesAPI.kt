@@ -1,13 +1,11 @@
 package com.example.projecte0alexcharles.network
+
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
-private const val BASE_URL =
-    "http://192.168.0.189:26667"
+private const val BASE_URL = "http://192.168.0.189:26667"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
@@ -15,10 +13,14 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface PreguntesAPI {
-    @FormUrlEncoded
     @POST("getXPreguntes")
-    suspend fun getPreguntesJSON(@Field("num") num: Int): String
+    suspend fun getPreguntesJSON(@Query("num") num: Int): String
 
+    @POST("finalista")
+    suspend fun enviarRespostes(
+        @Query("id") ids: String,
+        @Query("sessionId") uuid: String
+    ): String
 
     object PreguntesAPi {
         val retrofitService: PreguntesAPI by lazy {
@@ -26,4 +28,3 @@ interface PreguntesAPI {
         }
     }
 }
-

@@ -17,6 +17,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecte0alexcharles.fallades
+import com.example.projecte0alexcharles.pararTemporitzador
 import kotlinx.coroutines.launch
 
 class PreguntesViewModel : ViewModel() {
@@ -31,22 +33,30 @@ class PreguntesViewModel : ViewModel() {
                 val listResult = PreguntesAPI.PreguntesAPi.retrofitService.getPreguntesJSON(20)
                 val preguntesProvisional = parsePreguntes(listResult)
 
-                for (pregunta in preguntesProvisional){
-                    preguntes.add(pregunta)
-                }
+                preguntes.clear()
+                preguntes.addAll(preguntesProvisional)
 
+                if (preguntes.isNotEmpty()) {
+                    actualitzarPreguntes()
+                } else {
+                    Log.e("PreguntesViewModel", "No s'han carregat preguntes")
+                }
             } catch (e: Exception) {
                 Log.e("PreguntesViewModel", "Error al carregar les preguntes: ${e.message}")
             }
         }
     }
 
+
     fun contestarPreguntes(numeroResposta: Int) {
         respostesUsuari.add(numeroResposta)
         IndexpreguntaActual += 1
 
         if (IndexpreguntaActual >= preguntes.size) {
-            comprovarPreguntes(respostesUsuari)
+            if (activityJoc is JocActivity) {
+                (activityJoc as JocActivity).pararTemporitzador()
+            }
+            comprovarPreguntes()
             pantallaResultats(activityJoc)
         } else {
             actualitzarPreguntes()
@@ -61,23 +71,43 @@ class PreguntesViewModel : ViewModel() {
         resposta4.value = preguntes[IndexpreguntaActual].respostes[3].etiqueta
     }
 
-    fun comprovarPreguntes(respostes: MutableList<Int>) {
-        // comprovar al servidor
-        // encertades = ??
-        // fallades = ??
-    }
+    fun comprovarPreguntes() {
+        Log.d("PeticioAPI", "${uuid}" + "${respostesUsuari}")
+            viewModelScope.launch {
+                try {
+                    val resposta = PreguntesAPI.PreguntesAPi.retrofitService.enviarRespostes(
+                        respostesUsuari.toString(),
+                        uuid
+                    )
+                    Log.d("RespostaAPI", resposta)
+                    val gson = Gson()
+                    val responseMap = gson.fromJson(resposta, Map::class.java)
+                    val success = (responseMap["success"] as Double)?.toInt() ?: 0
+                    val total = (responseMap["total"] as Double)?.toInt() ?: 0
+                    encertades = success
+                    fallades = respostesUsuari.size - success
+                }
+                    catch(e: Exception) {
+                        Log.e("ErrorAPI", "Error al enviar les respostes: ${e.message}")
+                        e.printStackTrace()
+                    }
+                }
+
+        }
+
 
     fun parsePreguntes(json: String): List<Pregunta> {
         val gson = Gson()
         val responseMap = gson.fromJson(json, Map::class.java)
         uuid = responseMap["sessionId"] as String
+        Log.d("uuid", "uuid: ${uuid}")
         val quizs = responseMap["quizs"] as List<Map<String, Any>>
         val preguntesProvisional = mutableListOf<Pregunta>()
         for ((index, quiz) in quizs.withIndex()) {
             val respostesJson = quiz["respostes"] as List<Map<String, Any>>
             val respostes = respostesJson.map { resposta ->
                 Resposta(
-                    id = resposta["id"] as Int,
+                    id = (resposta["id"] as? Double)?.toInt() ?: 0,
                     etiqueta = resposta["etiqueta"] as String
                 )
             }
@@ -85,10 +115,11 @@ class PreguntesViewModel : ViewModel() {
                 index = index,
                 pregunta = quiz["pregunta"] as String,
                 respostes = respostes,
-                numeroImatge = quiz["id"] as Int
+                numeroImatge = (quiz["id"] as? Double)?.toInt() ?: 0
             )
             preguntesProvisional.add(novaPregunta)
         }
+        Log.d("preguntesProvisional", "preguntes: ${preguntesProvisional}")
         return preguntesProvisional
     }
 
