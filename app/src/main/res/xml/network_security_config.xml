@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">192.168.0.189</domain>
         <domain includeSubdomains="true">a23alechasan.dam.inspedralbes.cat</domain>
+        <domain includeSubdomains="true">dam.inspedralbes.cat</domain>
     </domain-config>
 </network-security-config>

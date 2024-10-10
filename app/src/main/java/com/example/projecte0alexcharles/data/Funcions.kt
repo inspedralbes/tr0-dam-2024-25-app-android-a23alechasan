@@ -18,16 +18,19 @@ import com.google.gson.reflect.TypeToken
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecte0alexcharles.fallades
+import com.example.projecte0alexcharles.imatgeURL
 import com.example.projecte0alexcharles.pararTemporitzador
 import kotlinx.coroutines.launch
 
+
+public var IndexpreguntaActual = 0
 class PreguntesViewModel : ViewModel() {
     val respostesUsuari: MutableList<Int> = mutableListOf()
     val preguntes = MutableList(0) { Pregunta() }
-    var IndexpreguntaActual = 0
     var uuid = ""
 
     fun getPreguntes() {
+        IndexpreguntaActual = 0
         viewModelScope.launch {
             try {
                 val listResult = PreguntesAPI.PreguntesAPi.retrofitService.getPreguntesJSON(20)
@@ -69,10 +72,13 @@ class PreguntesViewModel : ViewModel() {
         resposta2.value = preguntes[IndexpreguntaActual].respostes[1].etiqueta
         resposta3.value = preguntes[IndexpreguntaActual].respostes[2].etiqueta
         resposta4.value = preguntes[IndexpreguntaActual].respostes[3].etiqueta
+        imatgeURL.value = getImatge(preguntes[IndexpreguntaActual].numeroImatge).toString()
+        Log.d("ImatgeURL", "$imatgeURL")
     }
 
     fun comprovarPreguntes() {
-        Log.d("PeticioAPI", "${uuid}" + "${respostesUsuari}")
+        if (respostesUsuari.isNotEmpty()){
+            Log.d("PeticioAPI", "${uuid}" + "${respostesUsuari}")
             viewModelScope.launch {
                 try {
                     val resposta = PreguntesAPI.PreguntesAPi.retrofitService.enviarRespostes(
@@ -87,13 +93,16 @@ class PreguntesViewModel : ViewModel() {
                     encertades = success
                     fallades = respostesUsuari.size - success
                 }
-                    catch(e: Exception) {
-                        Log.e("ErrorAPI", "Error al enviar les respostes: ${e.message}")
-                        e.printStackTrace()
-                    }
+                catch(e: Exception) {
+                    Log.e("ErrorAPI", "Error al enviar les respostes: ${e.message}")
+                    e.printStackTrace()
                 }
-
+            }
+        } else {
+            encertades = 0
+            fallades = 0
         }
+    }
 
 
     fun parsePreguntes(json: String): List<Pregunta> {

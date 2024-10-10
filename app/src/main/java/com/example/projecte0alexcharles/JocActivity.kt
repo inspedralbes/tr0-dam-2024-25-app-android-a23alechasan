@@ -4,6 +4,7 @@ import android.content.Intent
 import coil.compose.rememberImagePainter
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -31,17 +32,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.projecte0alexcharles.data.IndexpreguntaActual
 import com.example.projecte0alexcharles.network.PreguntesAPI.PreguntesAPi
 import com.example.projecte0alexcharles.ui.theme.BlancBoto
 import com.example.projecte0alexcharles.ui.theme.BlauText
 import com.example.projecte0alexcharles.ui.theme.Negre
 import com.example.projecte0alexcharles.data.PreguntesViewModel
+import com.example.projecte0alexcharles.network.getImatge
 import com.example.projecte0alexcharles.ui.theme.Projecte0AlexCharlesTheme
 
 
@@ -50,6 +56,7 @@ var resposta1 = mutableStateOf("")
 var resposta2 = mutableStateOf("")
 var resposta3 = mutableStateOf("")
 var resposta4 = mutableStateOf("")
+var imatgeURL = mutableStateOf("")
 
 private var countDownTimer: CountDownTimer? = null
 
@@ -81,7 +88,6 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
             }
 
             override fun onFinish() {
-                viewModel.contestarPreguntes(1)
                 viewModel.comprovarPreguntes()
                 pantallaResultats(activity)
                 countDownTimer?.cancel()
@@ -109,19 +115,21 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
                         color = BlauText,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .height(100.dp),
+                            .padding(bottom = 16.dp),
                         textAlign = TextAlign.Center
                     )
 
-                    val imatgeUrl = PreguntesApi.getImatge(1)
-                    Image(
-                            painter = rememberAsyncImagePainter(imatgeUrl),
-                            contentDescription = "Imatge de la pregunta",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                    )
+                AsyncImage(
+                    model = imatgeURL.value,
+                    contentDescription = "Imatge de la pregunta",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    onError = {
+                        Log.e("AsyncImage", "${it.result.throwable.message}")
+                    }
+
+                )
 
                     Spacer(modifier = Modifier.height(30.dp))
 
@@ -209,10 +217,5 @@ fun JocActivity.pararTemporitzador() {
 fun pantallaResultats(activity: ComponentActivity) {
     val intent = Intent(activity, FinalActivity::class.java)
     activity.startActivity(intent)
-}
-@Composable
-fun PantallaPreguntes(numPregunta: Int) {
-    // Altres components
-    ImatgePreguntes(numPregunta)
 }
 
