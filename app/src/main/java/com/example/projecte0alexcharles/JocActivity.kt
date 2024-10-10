@@ -1,6 +1,7 @@
 package com.example.projecte0alexcharles
 
 import android.content.Intent
+import coil.compose.rememberImagePainter
 import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.activity.ComponentActivity
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.projecte0alexcharles.network.PreguntesAPI.PreguntesAPi
 import com.example.projecte0alexcharles.ui.theme.BlancBoto
 import com.example.projecte0alexcharles.ui.theme.BlauText
 import com.example.projecte0alexcharles.ui.theme.Negre
@@ -111,13 +114,13 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
                         textAlign = TextAlign.Center
                     )
 
-                    val imatge = painterResource(R.drawable.novoylogo)
+                    val imatgeUrl = PreguntesApi.getImatge(1)
                     Image(
-                        painter = imatge,
-                        contentDescription = "novoylogo",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
+                            painter = rememberAsyncImagePainter(imatgeUrl),
+                            contentDescription = "Imatge de la pregunta",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
                     )
 
                     Spacer(modifier = Modifier.height(30.dp))
@@ -190,13 +193,14 @@ fun pantallaCronometre(activity: ComponentActivity, viewModel: PreguntesViewMode
                 }
 
                 Text(text = "${tempsRestant}s",
-                    fontSize = 40.sp,
+                    fontSize = 30.sp,
                     color = Negre,
-                    modifier = Modifier.padding(top = 16.dp))
+                    modifier = Modifier.padding(top = 10.dp))
 
         }
     }
 }
+
 fun JocActivity.pararTemporitzador() {
     countDownTimer?.cancel()
 }
@@ -206,3 +210,9 @@ fun pantallaResultats(activity: ComponentActivity) {
     val intent = Intent(activity, FinalActivity::class.java)
     activity.startActivity(intent)
 }
+@Composable
+fun PantallaPreguntes(numPregunta: Int) {
+    // Altres components
+    ImatgePreguntes(numPregunta)
+}
+
